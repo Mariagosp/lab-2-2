@@ -1,0 +1,15 @@
+{
+  "name": "fibonacci-iterator-lib",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Gospodinova Mariia",
+  "license": "MIT",
+  "description": "Fibonacci generator with timeout iterator"
+}
