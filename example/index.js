@@ -1,5 +1,5 @@
-const { fibonacciGenerator, iteratorWithTimeout } = require("../src");
+const { fibonacciGenerator, iteratorWithTimeout } = require("lab2");
 
 const fib = fibonacciGenerator();
 
-iteratorWithTimeout(fib, 1);
+iteratorWithTimeout(fib, 2);
