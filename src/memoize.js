@@ -1,7 +1,5 @@
 function memoize(fn, options = {}) {
-  // 1. створення кешу
   const cache = new Map();
-  // 2. налаштування (maxSize, policy, ttl)
 
   const maxSize = options.maxSize || Infinity;
   const ttl = options.ttl || null;
@@ -13,7 +11,6 @@ function memoize(fn, options = {}) {
   }
 
   function evict() {
-    // якщо є кастомна функція
     if (customEvict) {
       customEvict(cache);
       return;
@@ -21,11 +18,11 @@ function memoize(fn, options = {}) {
 
     let keyToDelete = null;
 
-    // ----- LRU -----
     if (policy === "LRU") {
+      // least Recently used
       let oldestTime = Infinity;
 
-      for (const [key, entry] of cache) {
+      for (const [key, _] of cache) {
         if (cache[key]?.lastUsed < oldestTime) {
           oldestTime = cache[key].lastUsed;
           keyToDelete = key;
@@ -33,8 +30,8 @@ function memoize(fn, options = {}) {
       }
     }
 
-    // ----- LFU -----
     if (policy === "LFU") {
+      // least Frequently used
       let minCount = Infinity;
 
       for (const [key, entry] of cache) {
@@ -45,34 +42,34 @@ function memoize(fn, options = {}) {
       }
     }
 
-    // видаляємо
     if (keyToDelete !== null) {
       delete cache[keyToDelete];
     }
   }
 
   return function (...args) {
-    // 3. формування ключа
     const key = JSON.stringify(args);
-    // 4. перевірка кешу
+
     if (cache.has(key)) {
       const entry = cache.get(key);
 
       if (ttl && Date.now() - entry.createdAt > ttl) {
         console.log("ttl is up!");
+
         cache.delete(key);
       } else {
-        console.log("беру з кешу");
+        console.log("take from cache");
+
         entry.lastUsed = Date.now();
         entry.frequency++;
+
         return entry.value;
       }
     }
-    // 6. якщо нема → порахувати
+
     const result = fn(...args);
 
-    // 7. записати в кеш
-    console.log("рахую з нуля");
+    console.log("count from 0");
     cache.set(key, {
       value: result,
       lastUsed: Date.now(),
@@ -80,7 +77,6 @@ function memoize(fn, options = {}) {
       createdAt: Date.now(),
     });
 
-    // 8. перевірити ліміт і очистити
     if (getSize() > maxSize) {
       evict();
     }
@@ -90,7 +86,8 @@ function memoize(fn, options = {}) {
 }
 
 function slowAdd(a, b) {
-  console.log("Рахую...");
+  console.log("Counting...");
+
   return a + b;
 }
 
@@ -100,10 +97,10 @@ const fastAdd = memoize(slowAdd, {
   ttl: 1,
 });
 
-console.log(fastAdd(2, 3)); // Рахую... → 5
-console.log(fastAdd(2, 3)); // 5 (беремо з кешу)
-console.log(fastAdd(4, 5)); // Рахую... → 9
-console.log(fastAdd(6, 7)); // Рахую... → 13 → видалення LRU
-console.log(fastAdd(2, 3)); // Рахую... → 5 (бо попереднє 2,3 видалилося)
+console.log(fastAdd(2, 3));
+console.log(fastAdd(2, 3));
+console.log(fastAdd(4, 5));
+console.log(fastAdd(6, 7));
+console.log(fastAdd(2, 3));
 
 module.exports = { memoize };
