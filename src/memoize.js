@@ -23,8 +23,10 @@ function memoize(fn, options = {}) {
       let oldestTime = Infinity;
 
       for (const [key, _] of cache) {
-        if (cache[key]?.lastUsed < oldestTime) {
-          oldestTime = cache[key].lastUsed;
+        const entry = cache.get(key);
+
+        if (entry?.lastUsed < oldestTime) {
+          oldestTime = entry.lastUsed;
           keyToDelete = key;
         }
       }
@@ -35,15 +37,15 @@ function memoize(fn, options = {}) {
       let minCount = Infinity;
 
       for (const [key, entry] of cache) {
-        if (cache[key].frequency < minCount) {
-          minCount = cache[key].frequency;
+        if (entry.frequency < minCount) {
+          minCount = entry.frequency;
           keyToDelete = key;
         }
       }
     }
 
     if (keyToDelete !== null) {
-      delete cache[keyToDelete];
+      cache.delete(keyToDelete);
     }
   }
 
