@@ -16,6 +16,28 @@ function createBiDirectionalPriorityQueue() {
     };
   }
 
+  function getNodeByType(type) {
+    if (!head) return null;
+
+    if (type === "highest") {
+      return sorted[sorted.length - 1];
+    }
+
+    if (type === "lowest") {
+      return sorted[0];
+    }
+
+    if (type === "oldest") {
+      return head;
+    }
+
+    if (type === "newest") {
+      return tail;
+    }
+
+    throw new Error("Invalid type");
+  }
+
   function addToList(node) {
     if (!tail) {
       head = tail = node;
@@ -71,43 +93,14 @@ function createBiDirectionalPriorityQueue() {
   }
 
   function peek(type) {
-    if (!head) return null;
+    const node = getNodeByType(type);
 
-    if (type === "highest") {
-      return sorted[sorted.length - 1].item;
-    }
-
-    if (type === "lowest") {
-      return sorted[0].item;
-    }
-
-    if (type === "oldest") {
-      return head.item;
-    }
-
-    if (type === "newest") {
-      return tail.item;
-    }
-
-    throw new Error("Invalid peek type");
+    return node ? node.item : null;
   }
 
   function dequeue(type) {
-    if (!head) return null;
-
-    let node;
-
-    if (type === "highest") {
-      node = sorted[sorted.length - 1];
-    } else if (type === "lowest") {
-      node = sorted[0];
-    } else if (type === "oldest") {
-      node = head;
-    } else if (type === "newest") {
-      node = tail;
-    } else {
-      throw new Error("Invalid dequeue type");
-    }
+    const node = getNodeByType(type);
+    if (!node) return null;
 
     removeNode(node);
     return node.item;
